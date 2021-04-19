@@ -1,51 +1,46 @@
 import React, { useState } from "react";
-import { ListaTareas } from "./listatareas";
-import swal from "sweetalert";
-//create your first component
-export function Home() {
-	const myAlert = () => {
-		swal({
-			title: "Oops!",
-			text: "Need to add a task",
-			icon: "warning",
-			button: "Okay!"
-		});
-	};
-	const [list, setList] = useState([]);
-	const [task, setTask] = useState("");
 
-	const handleSubmit = e => {
-		e.preventDefault();
-		if (task === "") {
-			myAlert();
-		} else {
-			setList([...list, task]);
+export function Home() {
+	const [list, setlist] = useState([]);
+
+	function handleEvent(e) {
+		if (e.key === "Enter") {
+			setlist([...list, e.target.value]);
 		}
-		setTask("");
-	};
-	const handleChange = e => {
-		setTask(e.target.value);
+	}
+
+	const removeItem = indexItem => {
+		setlist(prevState =>
+			prevState.filter((todo, index) => index !== indexItem)
+		);
 	};
 
 	return (
-		<React.Fragment>
-			<div className="text-center">
-				<p>todos</p>
+		<div className="container">
+			<div className="box">
+				<h1>Todo</h1>
+				<input
+					type="text"
+					placeholder="What needs to be done?"
+					onKeyDown={event => handleEvent(event)}
+				/>
+				<ul className="list-group list-group-flus">
+					{list.map((item, index) => {
+						return (
+							<li className="list-group-item " key={index}>
+								{item}{" "}
+								<button
+									className="btn btn-danger"
+									onClick={() => removeItem(index)}>
+									X
+								</button>
+							</li>
+						);
+					})}
+
+					<p>{list.length + "   item left"}</p>
+				</ul>
 			</div>
-			{/*<p>{JSON.stringify(task)}</p>
-			<p>{JSON.stringify(list)}</p>*/}
-			<div className="formDiv">
-				<form className="formulario" onSubmit={e => handleSubmit(e)}>
-					<input
-						type="text"
-						placeholder="What needs to be done?"
-						onChange={e => handleChange(e)}
-						value={task}
-					/>
-				</form>
-				<ListaTareas list={list} updateList={setList} />
-				<cite>{"Pending tasks: " + list.length}</cite>
-			</div>
-		</React.Fragment>
+		</div>
 	);
 }
